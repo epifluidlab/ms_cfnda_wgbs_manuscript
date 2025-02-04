@@ -1,0 +1,193 @@
+##########################Figure 3A. Generate mean-diff vs. FDR scatter plot of differentiated CpGs
+#######pdds_severe_vs_mild
+awk '$5>-1' cpgs.pdds_severe_vs_mild.adjusted.bed | perl -ne 'chomp;@f=split "\t";@fs=split ":",$f[3];if($fs[1]<0){$m=0-$fs[2];}else{$m=$fs[2];}print "$m\t$f[4]\n"'> cpgs.pdds_severe_vs_mild.adjusted.mean_methy_fdr.txt
+
+d<-read.table("cpgs.pdds_severe_vs_mild.adjusted.mean_methy_fdr.txt",sep="\t",header=F)
+res=data.frame(FDR=d[,2],MethyChanges=d[,1])
+
+jpeg("volcano_Plot.cpgs.adjusted.fdr01.pdds_severe_vs_mild.jpg",width = 4, height = 4, units = 'in', res = 300)
+with(res, plot(MethyChanges, -log10(FDR), pch=21, col = "grey", lwd = 0.3, main="PDDS Severe vs. Mild", frame = T,xlim=c(-1, 1)))+
+  abline(h = 1, col = "blue", lty = 2)+ 
+  abline(v = c(-0.1,0.1), col = "blue", lty = 2)+
+  with(subset(res, MethyChanges< -0.1 & -log10(FDR)>1), points(MethyChanges, -log10(FDR), pch=20, col="#4cc9f0")) +
+  with(subset(res, MethyChanges> 0.1 & -log10(FDR)>1), points(MethyChanges, -log10(FDR), pch=20, col="#ff99c8"))
+dev.off()
+
+#hypo: 923
+dim(res[res$FDR<0.1&res$MethyChanges< -0.1,])
+#hyper: 521
+dim(res[res$FDR<0.1&res$MethyChanges> 0.1,])
+
+#########################Figure 3B: UMAP by methylation level in DMRs
+sed 's/^chr//g' dmrs.pdds_severe_vs_mild.bed > dmrs.pdds_severe_vs_mild.b37.bed
+
+grep -v "base" pdds_severe_vs_mild_table_design_matrix.bin.txt | cut -f1 | sed 's/.meth//g' | perl -ne 'chomp;$p=$_;print " -bigWig $p.methy_count.b37.bw -useMean0 0 -regionMode 0 -bigWig $p.cov.b37.bw -useMean0 0 -regionMode 0";' > methy_summary.pdds_severe_vs_mild.cmd.txt
+
+cat methy_summary.pdds_severe_vs_mild.cmd.txt | perl -ne 'chomp;@f=split " -useMean0 0 -regionMode 0";for($i=1,$j=0;$j<=$#f;$j+=2,$i++){$name=$f[$j];$name=~s/ -bigWig (\S+).methy_count.b37.bw/$1/;print "$i\t$name\n";}' > names_order.pdds_severe_vs_mild.txt
+
+
+perl -e '$cmd=`cat methy_summary.pdds_severe_vs_mild.cmd.txt`;chomp($cmd); $cmd="java -Xmx10G -cp \"dnaaseUtils-0.14-jar-with-dependencies.jar:java-genomics-io.jar:igv.jar\" main.java.edu.mit.compbio.utils.AlignMultiWigInsideBed dmrs.pdds_severe_vs_mild.b37.bed dmrs.pdds_severe_vs_mild.add_value.methy.bed.gz".$cmd."\n";`$cmd`;'
+
+
+####plot UMAP
+library(impute)
+
+sample_type<-read.table("pdds_severe_vs_mild_table_design_matrix.bin.txt",sep="\t",header=T)
+rownames(sample_type)=gsub(".meth","",sample_type[,1])
+
+
+##Cohort: 1=severe, 0=mild
+sample_color=sample_type[,4]
+sample_color[sample_type[,4]==1]="brown"
+sample_color[sample_type[,4]==0]="green"
+names(sample_color)<-rownames(sample_type)
+
+
+cfdna_wgbs.dmr<-read.table("dmrs.pdds_severe_vs_mild.add_value.methy.bed.gz",sep="\t",header=F)
+
+cfdna_wgbs.name.order<-read.table("names_order.pdds_severe_vs_mild.txt",sep="\t",header=F)
+
+methy.cfmat<-NULL
+dmr.len<-cfdna_wgbs.dmr[,3]-cfdna_wgbs.dmr[,2]
+for(i in seq(7,length(cfdna_wgbs.dmr[1,]),2)){
+	j=i+1
+
+	cov = cfdna_wgbs.dmr[,j]
+	s=as.numeric(cfdna_wgbs.dmr[,i]/cov)
+	methy.cfmat<-cbind(methy.cfmat,s)
+}
+rownames(methy.cfmat)<-cfdna_wgbs.dmr[,4]
+colnames(methy.cfmat)<-cfdna_wgbs.name.order[,2]
+
+##umap
+library(umap)
+set.seed(42)
+methy.cfmat.filter<-methy.cfmat[rowSums(is.na(methy.cfmat))<0.8*length(methy.cfmat[1,]),]
+
+methy.mat.missing<-impute.knn(methy.cfmat.filter, maxp="p",rowmax = 0.8)$data
+colnames(methy.mat.missing)
+HCG.mat.svd1<-svd(scale(t(methy.mat.missing)))
+
+HCG.mat.svd<-HCG.mat.svd1$u
+rownames(HCG.mat.svd)<-colnames(methy.mat.missing)
+
+pdf("dmr.fdr01.pdds_severe_vs_mild.prop_variance_exp.pdf",paper="special", height=5, width=10)
+par(mfrow = c(1, 2))
+plot((HCG.mat.svd1$d)[1:50], xlab = "Column", ylab = "Singular value", pch = 19)
+plot((HCG.mat.svd1$d^2/sum(HCG.mat.svd1$d^2))[1:50], xlab = "Column", ylab = "Prop. of variance explained", pch = 19)
+dev.off()
+
+pdf("dmr.fdr01.pdds_severe_vs_mild.umap.pdf",paper="special", height=5, width=5)
+HCG.umap_out <- umap(as.matrix(HCG.mat.svd[,1:4])) # Run umap
+plot(HCG.umap_out$layout,col=sample_color[rownames(HCG.mat.svd)],pch=16,xlab="UMAP 1",ylab="UMAP 2") # Plot the result
+legend("topright",legend=c("Severe","Mild"),col=c("brown","green"),pch=16,text.col=c("brown","green"))
+dev.off()
+
+
+#########################Figure 3C: Enrichment of DMRs at chromHMM states
+perl bedEnrichmentTool.pl chromHMM_GM12878.dmrs.pdds_severe_vs_mild dmrs.pdds_severe_vs_mild.bed hg19.chrom.sizes --anno ./15_states/ --random_same_chr
+
+pdds_severe_vs_mild<-read.table("chromHMM_GM12878.dmrs.pdds_severe_vs_mild.summary.txt",sep="\t",header=T)
+pdds_severe_vs_mild.fdr<-p.adjust(pdds_severe_vs_mild[,11],method="BH")
+pdds_severe_vs_mild.logratio<-log2(pdds_severe_vs_mild[,9])
+pdds_severe_vs_mild.logratio[is.infinite(pdds_severe_vs_mild.logratio)]<-NA
+names(pdds_severe_vs_mild.logratio)<-gsub("E116_15_coreMarks_mnemonics.","",pdds_severe_vs_mild[,1])
+names(pdds_severe_vs_mild.fdr)<-names(pdds_severe_vs_mild.logratio)
+order.names<-names(pdds_severe_vs_mild.logratio)
+order.names<-order.names[c(6,3,14,7,15,12,10,8,5,9,2,1,13,11,4)]
+
+da<-t(as.matrix(pdds_severe_vs_mild.logratio[order.names]))
+rownames(da)<-c("Severe vs. Mild")
+
+da.fdr<-t(as.matrix(pdds_severe_vs_mild.fdr[order.names]))
+rownames(da.fdr)<-c("Severe vs. Mild")
+
+pdf("chromHMM_enrichment.pdds_severe_vs_mild.pdf", paper="special", height=2, width=6)
+par(oma=c(0, 0, 0, 0),mar=c(7, 10, 1, 1))
+
+image(1:ncol(da), 1:nrow(da), t(da), col = colorRampPalette(c("blue","white","red"))(100), axes = FALSE, xlab="",ylab="")
+axis(1, 1:ncol(da), colnames(da), las=2)
+axis(2, 1:nrow(da), rownames(da), las=2)
+dev.off()
+
+#########################Figure 3E: Tissues-of-origin analysis
+##filter samples without PDDS and PDDS not <=1 or >=6
+d<-read.table("sample_meta_ms_wgbs_20191231.with_merged_names.v2.txt",sep="\t",header=F)
+
+d1<-read.table("MS_meta_data_summary.master.uniq_id.txt",sep="\t",header=T)
+d1<-d1[!is.na(d1$PDDS),]
+rownames(d1)<-d1[,1]
+
+m1<-cbind(paste(d[,1],d[,9],"meth",sep="."),1,ifelse(as.integer(factor(d[,4]))==2,0,1),d1[d[,2],c(7,10)])
+m1<-m1[!is.na(m1[,4]),]
+#m1<-m1[abs(m1[,5])<10,]
+m1<-m1[,1:4]
+m1[,4]=ifelse(m1[,4]<=1,0,ifelse(m1[,4]>=6,1,NA))
+#m1[,4]=ifelse(m1[,4]<=3,0,1)
+m1=m1[!is.na(m1[,4]),]
+colnames(m1)<-c("name","base","sex","cases")
+
+write.table(m1,"pdds_severe_vs_mild_table_design_matrix.filtered.bin.txt",sep="\t",quote=F,col.names=T,row.names=F)
+
+
+##plot boxplot of TOO
+
+meta<-read.table("pdds_severe_vs_mild_table_design_matrix.filtered.bin.txt",sep="\t",header=F, skip=1)
+ids<-gsub(".meth","",meta[,1])
+pdds=meta[,4]
+
+cell_mat<-NULL
+celltypes=NULL
+for(id in ids){
+  f=paste("uxm_res.",id,".csv",sep="")
+  d<-read.table(f,sep=",",header=T)
+  celltypes=d[,1]
+  cell_mat<-cbind(cell_mat,d[,2])
+}
+rownames(cell_mat)<-celltypes
+colnames(cell_mat)<-ids
+
+cell_res<-rbind(pdds,cell_mat)
+#write.table(t(cell_res),"too_plus_pdds.uxm_res.46_samples.txt",sep="\t",row.names=F,col.names=F,quote=F)
+
+cell_res<-rbind(meta[,1],cell_res)
+#write.table(t(cell_res),"too_plus_pdds_names.uxm_res.46_samples.txt",sep="\t",row.names=F,col.names=F,quote=F)
+
+
+pdf("cell_composition.46_MS_samples.diff_PDDS.pdf",paper="special", height=20, width=20)
+par(oma=c(0, 0, 0, 0),mar=c(5, 5, 4, 1),mfrow=c(6,6))
+
+for(i in 1:length(celltypes)){
+  celltype=celltypes[i]
+  d<-cell_mat[i,]*100
+  pdds_high<-d[pdds==1]
+  pdds_low<-d[pdds==0]
+  bp<-boxplot(pdds_high,pdds_low,xlab="",ylab="Percentage of cell type",main=celltype,outline=F,names=c("Severe","Mild"),las=2,col=c("brown","green"))
+  #tick <- seq_along(bp$names)
+  #axis(1, at = tick, labels = FALSE)
+  #text(tick, par("usr")[3] - 0.3, bp$names, srt = 45, xpd = TRUE)
+  test<-wilcox.test(pdds_high,pdds_low)
+  p<-test$p.value
+  print(celltype)
+  print(p)
+}
+
+dev.off()
+
+
+#########################Figure 3F: ROC curve for each comparison
+#####get DMRs in each fold as in Figure 3B
+####filter small DMRs
+awk '$5>=3 && $3-$2>100' dmr.bed > dmr.filter.bed
+
+#####see ms_pitts_wgbs.manuscript.20250129.ipynb for the classification details.
+
+
+
+
+
+
+
+
+
+

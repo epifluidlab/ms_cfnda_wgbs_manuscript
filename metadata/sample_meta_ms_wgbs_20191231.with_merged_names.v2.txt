@@ -1,0 +1,75 @@
+D3019_21	PRT170024	MS	F	Caucasian	Non-Hispanic	61	1	MS62
+D3019_22	PRT170158	MS	F	Caucasian	Non-Hispanic	60	1	MS10
+D3019_23	PRT170221	MS	M	Caucasian	Non-Hispanic	69	1	MS48
+D3019_24	PRT170307	MS	F	Caucasian	Non-Hispanic	67	1	MS38
+D3019_25	PRT180596	MS	M	Caucasian	Non-Hispanic	64	4	MS13
+D3019_26	PRT180621	MS	M	African American	Non-Hispanic	43	4	MS50
+D3019_27	PRT180632	MS	M	Caucasian	Non-Hispanic	69	4	MS34
+D3019_28	PRT170007	MS	F	Caucasian	Non-Hispanic	45	2	MS68
+D3019_29	PRT170030	MS	F	Caucasian	Non-Hispanic	52	3	MS22
+D3019_30	PRT170080	MS	F	Caucasian	Non-Hispanic	28	3	MS42
+D3019_31	PRT170081	MS	F	Caucasian	Non-Hispanic	44	3	MS4
+D3019_32	PRT170082	MS	F	Asian	Non-Hispanic	49	3	MS12
+D3019_33	PRT170102	MS	F	Caucasian	Non-Hispanic	47	3	MS23
+D3019_34	PRT170114	MS	F	Caucasian	Non-Hispanic	60	1	MS59
+D3019_35	PRT170122	MS	F	Caucasian	Non-Hispanic	48	3	MS7
+D3019_36	PRT170144	MS	F	Caucasian	Non-Hispanic	55	3	MS73
+D3019_37	PRT170147	MS	M	Caucasian	Non-Hispanic	66	4	MS3
+D3019_38	PRT170190	MS	F	Caucasian	Non-Hispanic	56	3	MS11
+D3019_39	PRT170193	MS	F	Caucasian	Non-Hispanic	59	1	MS19
+D3019_40	PRT170197	MS	F	Caucasian	Non-Hispanic	33	3	MS56
+D3019_41	PRT170224	MS	F	Caucasian	Non-Hispanic	54	1	MS39
+D3019_42	PRT170294	MS	F	Caucasian	Non-Hispanic	32	3	MS35
+D3019_43	PRT170333	MS	F	Caucasian	Non-Hispanic	54	2	MS37
+D3019_44	PRT170339	MS	F	Caucasian	Non-Hispanic	33	2	MS24
+D3019_45	PRT170348	MS	M	Caucasian	Non-Hispanic	66	3	MS32
+D3019_46	PRT170382	MS	F	African American	Non-Hispanic	49	2	MS49
+D3019_47	PRT170453	MS	M	Caucasian	Non-Hispanic	27	2	MS74
+D3019_48	PRT170514	MS	F	Caucasian	Non-Hispanic	47	3	MS25
+D3019_49	PRT170534	MS	F	Caucasian	Non-Hispanic	66	1	MS63
+D3019_50	PRT180613	MS	F	Caucasian	Non-Hispanic	46	1	MS36
+D3019_51	PRT170237	MS	F	Caucasian	Non-Hispanic	71	3	MS51
+D3019_52	PRT170396	MS	F	Caucasian	Non-Hispanic	55	3	MS67
+D3019_53	PRT180775	MS	F	African American	Non-Hispanic	61	1	MS43
+D3019_54	PRT170073	MS	F	Caucasian	Non-Hispanic	56	3	MS55
+D3019_55	PRT170452	MS	F	Caucasian	Non-Hispanic	41	3	MS1
+D3019_56	PRT170534	MS	F	Caucasian	Non-Hispanic	66	1	MS71
+D3019_57	PRT180566	MS	M	Caucasian	Non-Hispanic	30	3	MS26
+D3019_58	PRT190869	MS	F	Caucasian	Non-Hispanic	37	3	MS61
+D3019_59	PRT170117	MS	F	Caucasian	Non-Hispanic	50	1	MS47
+D3019_60	PRT170150	MS	F	African American	Non-Hispanic	43	2	MS9
+D3019_61	PRT170241	MS	M	Caucasian	Non-Hispanic	57	2	MS17
+D3019_62	PRT170296	MS	F	African American	Non-Hispanic	71	1	MS66
+D3019_63	PRT170296	MS	F	African American	Non-Hispanic	71	1	MS72
+D3019_64	PRT170339	MS	F	Caucasian	Non-Hispanic	34	3	MS30
+D3019_65	PRT190912	MS	M	Caucasian	Non-Hispanic	60	4	MS27
+D3019_66	PRT190918	MS	F	Caucasian	Non-Hispanic	57	4	MS41
+D3019_67	PRT190924	MS	M	Caucasian	Non-Hispanic	62	4	MS18
+D3019_68	PRT190928	MS	F	Caucasian	Non-Hispanic	61	4	MS31
+D3019_69	PRT190929	MS	M	Caucasian	Non-Hispanic	57	4	MS21
+D3019_70	PRT190933	MS	M	Caucasian	Non-Hispanic	70	4	MS45
+D3019_71	PRT190942	MS	F	Caucasian	Non-Hispanic	27	4	MS16
+D3019_72	PRT190943	MS	F	Caucasian	Non-Hispanic	57	4	MS15
+D3019_73	PRT190946	MS	M	Caucasian	Non-Hispanic	63	4	MS2
+D3019_74	PRT170532	MS	M	Caucasian	Non-Hispanic	66	1	MS52
+D3019_75	PRT180654	MS	F	Caucasian	Non-Hispanic	68	1	MS14
+D3019_76	PRT190988	MS	M	Caucasian	Non-Hispanic	49	1	MS28
+D3019_77	PRT190947	MS	F	Caucasian	Non-Hispanic	51	4	MS75
+D3019_78	PRT190952	MS	F	Caucasian	Non-Hispanic	68	4	MS8
+D3019_79	PRT191106	MS	F	Caucasian	Non-Hispanic	41	4	MS29
+D3019_80	PRT170433	MS	F	Caucasian	Non-Hispanic	71	3	MS54
+D3019_81	PRT170468	MS	M	Caucasian	Non-Hispanic	53	3	MS46
+D3019_82	PRT180783	MS	M	Caucasian	Non-Hispanic	40	2	MS6
+D3019_83	PRT191058	MS	F	Caucasian	Non-Hispanic	33	2	MS64
+D3019_84	PRT170485	MS	M	Caucasian	Non-Hispanic	57	3	MS53
+D3019_85	PRT170533	MS	F	African American	Non-Hispanic	55	3	MS57
+D3019_86	PRT190897	MS	F	African American	Non-Hispanic	39	3	MS33
+D3019_87	PRT191003	MS	F	Caucasian	Non-Hispanic	45	3	MS69
+D3019_88	PRT170194	MS	F	Caucasian	Non-Hispanic	52	3	MS44
+D3019_89	PRT170150	MS	F	African American	Non-Hispanic	43	2	MS58
+D3019_90	PRT170217	MS	F	Caucasian	Non-Hispanic	55	1	MS60
+D3019_91	PRT170378	MS	M	Caucasian	Non-Hispanic	45	2	MS5
+D3019_92	PRT180667	MS	M	Caucasian	Non-Hispanic	29	2	MS20
+D3019_93	PRT180698	MS	F	Caucasian	Non-Hispanic	59	4	MS40
+D3019_94	PRT180871	MS	F	Caucasian	Non-Hispanic	52	3	MS65
+D3019_95	PRT190945	MS	F	Caucasian	Non-Hispanic	57	4	MS70

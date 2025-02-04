@@ -1,0 +1,243 @@
+#########################Figure 2A: Generate mean-diff vs. FDR scatter plot of differentiated CpGs
+#######MS. vs. control
+awk '$5>-1' cpgs.ms_vs_control.adjusted.bed | perl -ne 'chomp;@f=split "\t";@fs=split ":",$f[3];if($fs[1]<0){$m=0-$fs[2];}else{$m=$fs[2];}print "$m\t$f[4]\n"'> cpgs.ms_vs_control.adjusted.mean_methy_fdr.txt
+
+
+d<-read.table("cpgs.ms_vs_control.adjusted.mean_methy_fdr.txt",sep="\t",header=F)
+res=data.frame(FDR=d[,2],MethyChanges=d[,1])
+
+jpeg("volcano_Plot.cpgs.adjusted.fdr01.ms_vs_control.jpg",width = 4, height = 4, units = 'in', res = 300)
+with(res, plot(MethyChanges, -log10(FDR), pch=21, col = "grey", lwd = 0.3, main="MS vs. Controls", frame = T,xlim=c(-1, 1)))+
+  abline(h = 1, col = "blue", lty = 2)+ 
+  abline(v = c(-0.1,0.1), col = "blue", lty = 2)+
+  with(subset(res, MethyChanges< -0.1 & -log10(FDR)>1), points(MethyChanges, -log10(FDR), pch=20, col="#4cc9f0")) +
+  with(subset(res, MethyChanges> 0.1 & -log10(FDR)>1), points(MethyChanges, -log10(FDR), pch=20, col="#ff99c8"))
+dev.off()
+
+#hypo: 1445 
+dim(res[res$FDR<0.1&res$MethyChanges< -0.1,])
+#hyper: 662
+dim(res[res$FDR<0.1&res$MethyChanges> 0.1,])
+
+#######progressive_vs_rrms
+awk '$5>-1' cpgs.progressive_vs_rrms.adjusted.bed | perl -ne 'chomp;@f=split "\t";@fs=split ":",$f[3];if($fs[1]<0){$m=0-$fs[2];}else{$m=$fs[2];}print "$m\t$f[4]\n"'> cpgs.progressive_vs_rrms.adjusted.mean_methy_fdr.txt
+
+d<-read.table("cpgs.progressive_vs_rrms.adjusted.mean_methy_fdr.txt",sep="\t",header=F)
+res=data.frame(FDR=d[,2],MethyChanges=d[,1])
+
+jpeg("volcano_Plot.cpgs.adjusted.fdr01.progressive_vs_rrms.jpg",width = 4, height = 4, units = 'in', res = 300)
+with(res, plot(MethyChanges, -log10(FDR), pch=21, col = "grey", lwd = 0.3, main="Progressive vs. RRMS", frame = T,xlim=c(-1, 1)))+
+  abline(h = 1, col = "blue", lty = 2)+ 
+  abline(v = c(-0.1,0.1), col = "blue", lty = 2)+
+  with(subset(res, MethyChanges< -0.1 & -log10(FDR)>1), points(MethyChanges, -log10(FDR), pch=20, col="#4cc9f0")) +
+  with(subset(res, MethyChanges> 0.1 & -log10(FDR)>1), points(MethyChanges, -log10(FDR), pch=20, col="#ff99c8"))
+dev.off()
+
+#hypo: 704
+dim(res[res$FDR<0.1&res$MethyChanges< -0.1,])
+#hyper: 487
+dim(res[res$FDR<0.1&res$MethyChanges> 0.1,])
+
+#######active_vs_stable
+awk '$5>-1' cpgs.active_vs_stable.adjusted.bed | perl -ne 'chomp;@f=split "\t";@fs=split ":",$f[3];if($fs[1]<0){$m=0-$fs[2];}else{$m=$fs[2];}print "$m\t$f[4]\n"'> cpgs.active_vs_stable.adjusted.mean_methy_fdr.txt
+
+d<-read.table("cpgs.active_vs_stable.adjusted.mean_methy_fdr.txt",sep="\t",header=F)
+res=data.frame(FDR=d[,2],MethyChanges=d[,1])
+
+jpeg("volcano_Plot.cpgs.adjusted.fdr01.active_vs_stable.jpg",width = 4, height = 4, units = 'in', res = 300)
+with(res, plot(MethyChanges, -log10(FDR), pch=21, col = "grey", lwd = 0.3, main="Actively relapsing vs. Stable remitting", frame = T,xlim=c(-1, 1)))+
+  abline(h = 1, col = "blue", lty = 2)+ 
+  abline(v = c(-0.1,0.1), col = "blue", lty = 2)+
+  with(subset(res, MethyChanges< -0.1 & -log10(FDR)>1), points(MethyChanges, -log10(FDR), pch=20, col="#4cc9f0")) +
+  with(subset(res, MethyChanges> 0.1 & -log10(FDR)>1), points(MethyChanges, -log10(FDR), pch=20, col="#ff99c8"))
+dev.off()
+
+#hypo: 370
+dim(res[res$FDR<0.1&res$MethyChanges< -0.1,])
+#hyper: 692
+dim(res[res$FDR<0.1&res$MethyChanges> 0.1,])
+
+
+#########################Figure 2B: UMAP by methylation level in DMRs
+##get methylation level at DMRs
+sed 's/^chr//g' dmrs.ms_vs_control.bed > dmrs.ms_vs_control.b37.bed
+sed 's/^chr//g' dmrs.progressive_vs_rrms.bed > dmrs.progressive_vs_rrms.b37.bed
+sed 's/^chr//g' dmrs.active_vs_stable.bed > dmrs.active_vs_stable.b37.bed
+
+cat dmrs.ms_vs_control.b37.bed dmrs.progressive_vs_rrms.b37.bed dmrs.active_vs_stable.b37.bed | sort -k1,1 -k2,2n -k3,3n > dmrs.merged_subtypes.b37.bed
+
+grep -v "base" ms_vs_control_table_design_matrix.bin.txt | cut -f1 | sed 's/.meth//g' | perl -ne 'chomp;$p=$_;print " -bigWig $p.methy_count.b37.bw -useMean0 0 -regionMode 0 -bigWig $p.cov.b37.bw -useMean0 0 -regionMode 0";' > methy_summary.ms_vs_control.cmd.txt
+
+cat methy_summary.ms_vs_control.cmd.txt | perl -ne 'chomp;@f=split " -useMean0 0 -regionMode 0";for($i=1,$j=0;$j<=$#f;$j+=2,$i++){$name=$f[$j];$name=~s/ -bigWig (\S+).methy_count.b37.bw/$1/;print "$i\t$name\n";}' > names_order.ms_vs_control.txt
+
+
+perl -e '$cmd=`cat methy_summary.ms_vs_control.cmd.txt`;chomp($cmd); $cmd="java -Xmx18G -cp \"dnaaseUtils-0.14-jar-with-dependencies.jar:java-genomics-io.jar:igv.jar\" main.java.edu.mit.compbio.utils.AlignMultiWigInsideBed dmrs.merged_subtypes.b37.bed dmrs.merged_subtypes.add_value.methy.bed.gz".$cmd."\n";`$cmd`;'
+
+##plot UMAP
+
+library(impute)
+
+sample_type<-read.table("ms_vs_control_table_design_matrix.txt",sep="\t",header=T)
+rownames(sample_type)=gsub(".meth","",sample_type[,1])
+
+
+##Cohort: 1=progressive, 2=actively relapsing, 3=stable remitting, 4=healthy control
+sample_color=sample_type[,6]
+sample_color[sample_type[,6]==1]="red"
+sample_color[sample_type[,6]==2]="orange"
+sample_color[sample_type[,6]==3]="blue"
+sample_color[sample_type[,6]==4]="black"
+names(sample_color)<-rownames(sample_type)
+
+
+cfdna_wgbs.dmr<-read.table("dmrs.merged_subtypes.add_value.methy.bed.gz",sep="\t",header=F)
+
+cfdna_wgbs.name.order<-read.table("names_order.ms_vs_control.txt",sep="\t",header=F)
+
+methy.cfmat<-NULL
+dmr.len<-cfdna_wgbs.dmr[,3]-cfdna_wgbs.dmr[,2]
+for(i in seq(7,length(cfdna_wgbs.dmr[1,]),2)){
+	j=i+1
+	cov = cfdna_wgbs.dmr[,j]
+	s=as.numeric(cfdna_wgbs.dmr[,i]/cov)
+	methy.cfmat<-cbind(methy.cfmat,s)
+}
+rownames(methy.cfmat)<-cfdna_wgbs.dmr[,4]
+colnames(methy.cfmat)<-cfdna_wgbs.name.order[,2]
+
+library(umap)
+set.seed(42)
+methy.cfmat.filter<-methy.cfmat[rowSums(is.na(methy.cfmat))<0.8*length(methy.cfmat[1,]),]
+
+methy.mat.missing<-impute.knn(methy.cfmat.filter, maxp="p",rowmax = 0.8)$data
+colnames(methy.mat.missing)
+HCG.mat.svd1<-svd(scale(t(methy.mat.missing)))
+
+HCG.mat.svd<-HCG.mat.svd1$u
+rownames(HCG.mat.svd)<-colnames(methy.mat.missing)
+
+pdf("dmr.fdr01.four_subtypes.prop_variance_exp.pdf",paper="special", height=5, width=10)
+par(mfrow = c(1, 2))
+plot((HCG.mat.svd1$d)[1:50], xlab = "Column", ylab = "Singular value", pch = 19)
+plot((HCG.mat.svd1$d^2/sum(HCG.mat.svd1$d^2))[1:50], xlab = "Column", ylab = "Prop. of variance explained", pch = 19)
+dev.off()
+
+pdf("dmr.fdr01.four_subtypes.umap.pdf",paper="special", height=5, width=5)
+HCG.umap_out <- umap(as.matrix(HCG.mat.svd[,1:6])) # Run umap
+plot(HCG.umap_out$layout,col=sample_color[rownames(HCG.mat.svd)],pch=16,xlab="UMAP 1",ylab="UMAP 2") # Plot the result
+legend("topleft",legend=c("Progressive","Active relapse","Stable remitting","Controls"),col=c("red","orange","blue","black"),pch=16,text.col=c("red","orange","blue","black"))
+dev.off()
+
+#########################Figure 2C: Enrichment of DMRs in chromHMM state
+ls dmr*bed  | perl -ne 'chomp;$in=$_;$p=$_;$p=~s/\.bed$//;`perl bedEnrichmentTool.pl chromHMM_GM12878.$p $in hg19.chrom.sizes --anno ./15_states/ --random_same_chr`'
+
+##plot
+ms_vs_control<-read.table("chromHMM_GM12878.dmrs.ms_vs_control.summary.txt",sep="\t",header=T)
+ms_vs_control.fdr<-p.adjust(ms_vs_control[,11],method="BH")
+ms_vs_control.logratio<-log2(ms_vs_control[,9])
+ms_vs_control.logratio[is.infinite(ms_vs_control.logratio)]<-NA
+names(ms_vs_control.logratio)<-gsub("E116_15_coreMarks_mnemonics.","",ms_vs_control[,1])
+names(ms_vs_control.fdr)<-names(ms_vs_control.logratio)
+order.names<-names(ms_vs_control.logratio)
+order.names<-order.names[c(6,3,14,7,15,12,10,8,5,9,2,1,13,11,4)]
+
+
+progressive_vs_rrms<-read.table("chromHMM_GM12878.dmrs.progressive_vs_rrms.summary.txt",sep="\t",header=T)
+progressive_vs_rrms.fdr<-p.adjust(progressive_vs_rrms[,11],method="BH")
+progressive_vs_rrms.logratio<-log2(progressive_vs_rrms[,9])
+progressive_vs_rrms.logratio[is.infinite(progressive_vs_rrms.logratio)]<-NA
+names(progressive_vs_rrms.logratio)<-gsub("E116_15_coreMarks_mnemonics.","",progressive_vs_rrms[,1])
+names(progressive_vs_rrms.fdr)<-names(progressive_vs_rrms.logratio)
+
+active_vs_stable<-read.table("chromHMM_GM12878.dmrs.active_vs_stable.summary.txt",sep="\t",header=T)
+active_vs_stable.fdr<-p.adjust(active_vs_stable[,11],method="BH")
+active_vs_stable.logratio<-log2(active_vs_stable[,9])
+active_vs_stable.logratio[is.infinite(active_vs_stable.logratio)]<-NA
+names(active_vs_stable.logratio)<-gsub("E116_15_coreMarks_mnemonics.","",active_vs_stable[,1])
+names(active_vs_stable.fdr)<-names(active_vs_stable.logratio)
+
+da<-rbind(ms_vs_control.logratio[order.names],progressive_vs_rrms.logratio[order.names],active_vs_stable.logratio[order.names])
+rownames(da)<-c("MS_vs_Controls","Progressive_vs_RRMS","Active_vs_Stable")
+
+da.fdr<-rbind(ms_vs_control.fdr[order.names],progressive_vs_rrms.fdr[order.names],active_vs_stable.fdr[order.names])
+rownames(da.fdr)<-c("MS_vs_Controls","Progressive_vs_RRMS","Active_vs_Stable")
+
+pdf("chromHMM_enrichment.MS_subtypes.pdf", paper="special", height=3, width=6)
+par(oma=c(0, 0, 0, 0),mar=c(7, 10, 1, 1))
+
+image(1:ncol(da), 1:nrow(da), t(da), col = colorRampPalette(c("blue","white","red"))(100), axes = FALSE, xlab="",ylab="")
+axis(1, 1:ncol(da), colnames(da), las=2)
+axis(2, 1:nrow(da), rownames(da), las=2)
+dev.off()
+
+#########################Figure 2D: Enrichment by g:plot
+ls dmr*bed  | perl -ne 'chomp;$in=$_;$p=$_;$p=~s/\.bed$//;`liftOver -bedPlus=3 $in hg19ToHg38.over.chain $p.hg38.bed $p.hg38_unmapped.bed`'
+
+
+#########################Figure 2E: Tissues-of-origin analysis
+###get the panel ready
+wget -c https://raw.githubusercontent.com/nloyfer/UXM_deconv/main/supplemental/Atlas.U25.l4.hg19.tsv
+
+###get the marker data ready
+cut -f1-3 Atlas.U25.l4.hg19.tsv | grep -v "start" | perl -ne 'chomp;@f=split "\t";$f[0]=~s/^chr//;$f[1]-=100;$f[2]+=100;print join("\t",@f)."\n";' > Atlas.U25.l4.b37.bed
+
+##gte TOO for each bam file
+perl ./call_too.pl input.b37.bam output Atlas.U25.l4.b37.bed
+
+##plot boxplot
+meta<-read.table("ms_vs_control_table_design_matrix.75samples.txt",sep="\t",header=F, skip=1)
+ids<-gsub(".meth","",meta[,1])
+subtypes=meta[,6]
+
+cell_mat<-NULL
+celltypes=NULL
+for(id in ids){
+  f=paste("uxm_res.",id,".csv",sep="")
+  d<-read.table(f,sep=",",header=T)
+  celltypes=d[,1]
+  cell_mat<-cbind(cell_mat,d[,2])
+}
+rownames(cell_mat)<-celltypes
+colnames(cell_mat)<-ids
+
+cell_res<-rbind(subtypes,cell_mat)
+write.table(t(cell_res),"too_plus_subtypes.uxm_res.75_samples.txt",sep="\t",row.names=F,col.names=F,quote=F)
+
+cell_res<-rbind(meta[,1],cell_res)
+write.table(t(cell_res),"too_plus_names.uxm_res.75_samples.txt",sep="\t",row.names=F,col.names=F,quote=F)
+
+
+pdf("cell_composition.75_MS_samples.pdf",paper="special", height=20, width=20)
+par(oma=c(0, 0, 0, 0),mar=c(5, 5, 4, 1),mfrow=c(6,6))
+
+for(i in 1:length(celltypes)){
+  celltype=celltypes[i]
+  d<-cell_mat[i,]*100
+  pms<-d[subtypes==1]
+  active<-d[subtypes==2]
+  relapse<-d[subtypes==3]
+  control<-d[subtypes==4]
+  bp<-boxplot(pms,active,relapse,control,xlab="",ylab="Percentage of cell type",main=celltype,outline=F,names=c("PMS","A-RRMS","S-RRMS","Control"),las=2,col=c("red","orange","blue","grey"))
+
+}
+
+dev.off()
+
+#########################Figure 2F: ROC curve for each comparison
+#####get DMRs in each fold as in Figure 2B,
+####filter small DMRs
+awk '$5>=3 && $3-$2>100' dmr.bed > dmr.filter.bed
+
+#####see ms_pitts_wgbs.manuscript.20250129.ipynb for the classification details.
+
+
+
+
+
+
+
+
+
+
+
+

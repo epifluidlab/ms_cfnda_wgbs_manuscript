@@ -1,0 +1,11 @@
+##################Figure 4A. generate PDDS vs. days curve from linear mixed model
+Rscript ./lm_model.prog_region.multithreads.R
+
+###then get prognostic locations:
+grep -v location location_fdr001_model.correct_cov.multithreads.txt | perl -ne 'chomp;@f=split "\t";if($f[0]=~/(\w+):(\d+)-(\d+)/){$c=$1;$s=$2;$e=$3;print "$c\t$s\t$e\t$f[0]\t$f[4]\t$f[8]\n";}' >  corrected_covar.location_fdr001_model.b37.bed
+
+#################Figure 4B. ROC curve to predict future disease severity
+####then get cfDNA methylation level at these locations
+ls pdds.data.inter.*.txt | perl -ne 'chomp;$n=$_;$in="corrected_covar.location_fdr001_model.b37.bed";$prefix=$n;$prefix=~s/pdds.data.inter.(\w+).txt/$1/;$cmd="/jet/home/dnaase/startup/software/java/jdk1.8.0_281/bin/java -Xmx2G -cp \"/jet/home/dnaase/code/mytools/dnaaseUtils-0.14-jar-with-dependencies.jar:/jet/home/dnaase/code/mytools/java-genomics-io.jar:/jet/home/dnaase/code/mytools/igv.jar\" main.java.edu.mit.compbio.utils.AlignMultiWigInsideBed $in corrected_covar.location_fdr001_model.$prefix.add_methy.bed.gz";open(F,"<$n");while(<F>){@f=split "\t";$p=$f[0];$p=~s/\.meth$//;$cmd.=" -bigWig /jet/home/dnaase/startup/projects/wgbs_ms_preterm_20191231/manuscript_v3/dmr_with_cov_75samples/$p.methy_count.b37.bw -useMean0 0 -regionMode 0 -bigWig $p.cov.b37.bw -useMean0 0 -regionMode 0";}close(F);`$cmd\n`;'
+
+########see ms_pitts_wgbs.manuscript.20250129.ipynb for the classification details.
