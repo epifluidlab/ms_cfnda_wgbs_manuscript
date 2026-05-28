@@ -1,5 +1,5 @@
 	base	sex	race	age	subtype	cases
-D3019_21.MS62.meth	1	1	3	29	3	1
+D3019_21.MS62.meth	1	1	3	29	1	1
 D3019_22.MS10.meth	1	1	3	28	1	1
 D3019_23.MS48.meth	1	2	3	36	1	1
 D3019_24.MS38.meth	1	1	3	34	1	1
@@ -45,8 +45,8 @@ D3019_57.MS26.meth	1	2	3	4	3	1
 D3019_58.MS61.meth	1	1	3	8	3	1
 D3019_64.MS30.meth	1	1	3	7	3	1
 D3019_80.MS54.meth	1	1	3	38	3	1
-D3019_81.MS46.meth	1	2	3	22	1	1
-D3019_84.MS53.meth	1	2	3	26	1	1
+D3019_81.MS46.meth	1	2	3	22	3	1
+D3019_84.MS53.meth	1	2	3	26	3	1
 D3019_85.MS57.meth	1	1	1	24	3	1
 D3019_86.MS33.meth	1	1	1	9	3	1
 D3019_87.MS69.meth	1	1	3	14	3	1
