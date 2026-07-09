@@ -1,7 +1,7 @@
 # <img alt="Overview of the Pilot Study." src="https://github.com/user-attachments/assets/d77d1f6f-85c3-47c4-8727-427c31997604" height="60"> ‎ ‎MS cfDNA WGBS Manuscript
 
 ## Citation
-Fu H, Huang K, Zhu W, Zhang L, Bandaru R, Wang L#, Liu Y#, Xia Z# (2025) Plasma cfDNA methylation for noninvasive multiple sclerosis diagnosis, subtype classification, and prognosis: A pilot study. medRxiv Preprint [![Static Badge](https://img.shields.io/badge/DOI-10.1101/2025.02.14.25322180-blue?style=flat-square)](https://doi.org/10.1101/2025.02.14.25322180)
+Fu H, Liang J, Huang K, Zhu W, Zhang L, Bandaru R, Venkatesh S, Walker E, Wang L#, Liu Y#, Xia Z# (2025) Plasma cfDNA methylation for noninvasive multiple sclerosis diagnosis, subtype classification, and prognosis: A pilot study. medRxiv Preprint [![Static Badge](https://img.shields.io/badge/DOI-10.1101/2025.02.14.25322180-blue?style=flat-square)](https://doi.org/10.1101/2025.02.14.25322180)
 
 
 ## Contact
