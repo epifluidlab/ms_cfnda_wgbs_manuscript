@@ -3,7 +3,7 @@
 
 ## Citation
 Fu H, Liang J, Huang K, Zhu W, Zhang L, Bandaru R, Venkatesh S, Walker E, Wang L<sup>#</sup>, Liu Y<sup>#</sup>, Xia Z<sup>#</sup> (2026) Circulating cell-free DNA methylation profiles as
-candidate noninvasive multiple sclerosis biomarkers. *medRxiv* Preprint [![Static Badge](https://img.shields.io/badge/DOI-10.1101/2025.02.14.25322180-836EAA?style=flat-square)](https://doi.org/10.1101/2025.02.14.25322180)
+candidate noninvasive multiple sclerosis biomarkers. *Nature Communications Medicine* [![Static Badge](https://img.shields.io/badge/DOI-10.1101/2025.02.14.25322180-836EAA?style=flat-square)](https://doi.org/10.1101/2025.02.14.25322180)
 
 
 ## Contact
